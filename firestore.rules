@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() { return request.auth != null; }
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == "drshailesh36@gmail.com" ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function isValidUser(data) {
+      return data.get('uid', null) is string &&
+             data.get('email', null) is string &&
+             data.get('role', null) in ['admin', 'patient'];
+    }
+
+    function isValidAppointment(data) {
+      return data.get('patientUid', null) is string && 
+             data.get('patientName', null) is string &&
+             data.get('status', null) in ['pending', 'confirmed', 'completed', 'cancelled'];
+    }
+
+    function isValidMedicine(data) {
+      return data.get('name', null) is string &&
+             data.get('category', null) is string &&
+             data.get('stock', null) is number &&
+             data.get('price', null) is number;
+    }
+
+    function isValidPrescription(data) {
+      return data.get('patientUid', null) == request.auth.uid &&
+             data.get('patientName', null) is string &&
+             data.get('imageData', null) is string &&
+             data.get('status', null) in ['pending', 'reviewed', 'ready', 'cancelled'];
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId && isValidUser(request.resource.data) && request.resource.data.role == 'patient';
+      allow update: if isAdmin() || (isAuthenticated() && request.auth.uid == userId && request.resource.data.role == resource.data.role);
+    }
+
+    match /appointments/{appointmentId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.patientUid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.patientUid == request.auth.uid && isValidAppointment(request.resource.data);
+      allow update: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.patientUid && request.resource.data.status == 'cancelled' && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']));
+      allow delete: if isAdmin();
+    }
+
+    match /medicines/{medicineId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /prescriptions/{prescriptionId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.patientUid || isAdmin());
+      allow create: if isAuthenticated() && isValidPrescription(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}
