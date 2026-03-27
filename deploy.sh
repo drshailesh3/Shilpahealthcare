@@ -5,8 +5,8 @@ set -e
 
 echo "Starting deployment process..."
 
-# 1. Build the project
-echo "Building the project..."
+# 1. Build the project (optional, just to verify it builds before pushing)
+echo "Building the project locally to verify..."
 npm run build
 
 # 2. Add changes to Git
@@ -25,8 +25,4 @@ echo "Pushing source code to GitHub (main branch)..."
 # If not, you can run: git remote add origin https://github.com/drshailesh3/Shilpahealthcare.git
 git push origin main
 
-# 5. Deploy to GitHub Pages
-echo "Deploying to GitHub Pages (gh-pages branch)..."
-npm run deploy
-
-echo "Deployment complete! Your changes should be live on GitHub Pages shortly."
+echo "Source code pushed! GitHub Actions will now automatically build and deploy your site to GitHub Pages."

@@ -4,7 +4,9 @@ Multi-Specialty Clinic, Pharmacy, and Diagnostics in Ambedkar Nagar, UP. Led by 
 
 ## Deployment Instructions
 
-To push this project to your GitHub repository and make it live on GitHub Pages, follow these steps in your local terminal:
+This project is configured with **GitHub Actions** for automated CI/CD. When you push your code to the `main` branch, GitHub Actions will automatically build the project and deploy it to GitHub Pages.
+
+To push your changes and trigger a deployment, follow these steps in your local terminal:
 
 1. **Initialize Git (if not already done):**
    ```bash
@@ -20,9 +22,9 @@ To push this project to your GitHub repository and make it live on GitHub Pages,
    ```bash
    bash deploy.sh
    ```
-   *This script will build your project, commit the source code to the `main` branch, and deploy the live website to the `gh-pages` branch.*
+   *This script will verify the build locally, commit the source code, and push it to the `main` branch. GitHub Actions will then take over and deploy the live website.*
 
-4. **Configure GitHub Pages:**
+4. **Configure GitHub Pages (One-time setup):**
    - Go to your repository on GitHub: `https://github.com/drshailesh3/Shilpahealthcare`
    - Click on **Settings** > **Pages** (on the left sidebar).
    - Under **Build and deployment**, set the **Source** to **Deploy from a branch**.

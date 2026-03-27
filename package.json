@@ -8,7 +8,6 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "git-push": "git add . && git commit -m 'Update' && git push origin main",
-    "deploy": "vite build && gh-pages -d dist",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
