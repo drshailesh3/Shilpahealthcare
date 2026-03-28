@@ -111,6 +111,42 @@ const IconMap: Record<string, any> = {
   UserRound,
 };
 
+class GlobalErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: Error | null}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Global Error Caught:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-red-50">
+          <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl text-center">
+            <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Something went wrong</h2>
+            <p className="text-slate-600 mb-6">{this.state.error?.message || 'An unexpected error occurred.'}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="w-full py-3 medical-gradient text-white font-bold rounded-xl"
+            >
+              Reload Application
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -148,7 +184,7 @@ function ErrorBoundary({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  return <>{children}</>;
+  return <GlobalErrorBoundary>{children}</GlobalErrorBoundary>;
 }
 
 export default function App() {
@@ -218,8 +254,12 @@ export default function App() {
       try {
         await getDocFromServer(doc(db, 'test', 'connection'));
       } catch (error) {
-        if(error instanceof Error && error.message.includes('the client is offline')) {
-          console.error("Please check your Firebase configuration.");
+        if (error instanceof Error) {
+          if (error.message.includes('the client is offline')) {
+            console.error("Please check your Firebase configuration.");
+          } else if (error.message.includes('API key not valid') || error.message.includes('dummy-api-key')) {
+            handleFirestoreError(new Error("Invalid Firebase Configuration. Please set up your environment variables or firebase-applet-config.json."), OperationType.GET, 'test/connection');
+          }
         }
       }
     }
