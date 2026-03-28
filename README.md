@@ -39,6 +39,26 @@ To push your changes and trigger a deployment, follow these steps in your local 
 - **Admin Dashboard:** Manage appointments, pharmacy stock, and patient records.
 - **Bilingual Support:** Content available in both English and Hindi.
 
+## Firebase Configuration
+
+This project uses Firebase for authentication and database. You can configure Firebase in two ways:
+
+1. **Environment Variables (Recommended for CI/CD):**
+   Create a `.env` file in the root directory (copy from `.env.example`) and fill in your Firebase credentials:
+   ```env
+   VITE_FIREBASE_API_KEY="your_api_key"
+   VITE_FIREBASE_AUTH_DOMAIN="your_auth_domain"
+   VITE_FIREBASE_PROJECT_ID="your_project_id"
+   VITE_FIREBASE_STORAGE_BUCKET="your_storage_bucket"
+   VITE_FIREBASE_MESSAGING_SENDER_ID="your_messaging_sender_id"
+   VITE_FIREBASE_APP_ID="your_app_id"
+   VITE_FIREBASE_DATABASE_ID="your_database_id"
+   ```
+   For GitHub Actions deployment, add these variables as **Repository Secrets** (`Settings > Secrets and variables > Actions`).
+
+2. **JSON File (Local Development):**
+   Alternatively, you can place a `firebase-applet-config.json` file in the root directory containing your Firebase configuration object.
+
 ## Tech Stack
 - React + TypeScript
 - Tailwind CSS

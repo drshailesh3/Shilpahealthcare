@@ -17,7 +17,7 @@ git add .
 echo "Committing changes..."
 read -p "Enter commit message (default: 'Update'): " msg
 msg=${msg:-Update}
-git commit -m "$msg"
+git commit -m "$msg" || echo "No changes to commit"
 
 # 4. Push source code to GitHub
 echo "Pushing source code to GitHub (main branch)..."

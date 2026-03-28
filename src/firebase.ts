@@ -1,7 +1,10 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import firebaseConfigJson from '../firebase-applet-config.json';
+
+const configModules = import.meta.glob('../firebase-applet-config.json', { eager: true });
+const rawConfig: any = configModules['../firebase-applet-config.json'] || {};
+const firebaseConfigJson: any = rawConfig.default || rawConfig;
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || firebaseConfigJson.apiKey,
